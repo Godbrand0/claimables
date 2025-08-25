@@ -38,4 +38,10 @@ contract Airdrop is ERC721, Ownable {
     function setBaseURI(string memory _newBaseURI) external onlyOwner {
         baseTokenURI = _newBaseURI;
     }
+    function getMaxSupply() pure external returns(uint256){
+        return MAX_SUPPLY;
+    }
+    function getTotalSupply() external view returns(uint256){
+        return tokenIdCounter;
+    }
 }
