@@ -1,0 +1,9 @@
+{
+  "name": "godbrand.eth",
+  "description": "a piece of a greater whole",
+  "image": "ipfs://bafkreibatlkgfaswl2ye5ojgbwsc4rkbn3k3d26zwp7ezj2g5ih5c742ry",
+  "attributes": [
+    { "trait_type": "Background", "value": "Blue" },
+    { "trait_type": "Power", "value": "100" }
+  ]
+}

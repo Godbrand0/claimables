@@ -16,7 +16,7 @@ contract Airdrop is ERC721, Ownable {
         Ownable(msg.sender)
     {
         baseTokenURI = _baseURI; // e.g. "ipfs://QmYourCID/"
-        tokenIdCounter = 1;
+        tokenIdCounter = 0;
     }
 
     /// @notice Claim NFT (only once per wallet)
@@ -29,15 +29,18 @@ contract Airdrop is ERC721, Ownable {
         tokenIdCounter++;
     }
 
-    // /// @dev Override to return the stored base URI
-    // function _baseURI() internal view override returns (string memory) {
-    //     return baseTokenURI;
-    // }
-
-    /// @notice Update base URI if needed (onlyOwner)
-    function setBaseURI(string memory _newBaseURI) external onlyOwner {
-        baseTokenURI = _newBaseURI;
+    
+    function _baseURI() internal view override returns (string memory) {
+        return baseTokenURI;
     }
+
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(ownerOf(tokenId) != address(0), "nonexistent token");
+        // All tokens point to the same metadata JSON
+        return baseTokenURI;
+    }
+
+
     function getMaxSupply() pure external returns(uint256){
         return MAX_SUPPLY;
     }

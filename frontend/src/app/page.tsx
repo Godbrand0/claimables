@@ -1,53 +1,38 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import abi from "../../../artifacts/contracts/claimables.sol/Airdrop.json";
-
-
-
-
-
-const contract_address = "0xA727C7aED72a3e4d9b79A23204C6CAd978045fC1";
+import { useContract } from "../hooks/useContract";
+import ConnectButton from "../components/connectButton";
+import MintButton from "../components/MintButton";
+import NFTInfo from "../components/NFTInfo";
+import Image from "next/image";
+import "./globals.css";
+import NavBar from "@/components/navBar";
 
 export default function Home() {
-  const [address, setAddress] = useState<string | null>(null);
-  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
-  const [contract, setContract] = useState<ethers.Contract | null>(null);
+  const { contractAddress, address, contract, connectWallet } = useContract();
   const [totalSupply, setTotalSupply] = useState<number>(0);
   const [totalMinted, setTotalMinted] = useState<number>(0);
   const [minted, setMinted] = useState<boolean>(false);
 
-  const connectWallet = async () => {
-    if (typeof window.ethereum !== "undefined") {
-      try {
-        const prov = new ethers.BrowserProvider(window.ethereum);
-        const accounts = await prov.send("eth_requestAccounts", []);
-        setAddress(accounts[0]);
-        setProvider(prov);
-
-        const signer = await prov.getSigner();
-        const nftContract = new ethers.Contract(
-          contract_address,
-          abi.abi,
-          signer
-        );
-        setContract(nftContract);
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      alert("please install metamask");
-    }
-  };
+  // async function getDeployedBytecode() {
+  //   if (!provider) return;
+  //   try {
+  //     const code = await provider.getCode(contract_address);
+  //     console.log("Deployed bytecode length:", code.length);
+  //   } catch (error) {
+  //     console.error("Error fetching bytecode:", error);
+  //   }
+  // }
+  // getDeployedBytecode();
 
   const loadSupply = async () => {
     if (!contract) return;
     try {
       const total = await contract.getMaxSupply();
       const minted = await contract.getTotalSupply();
-      setTotalSupply(total.toNumber());
-      setTotalMinted(minted.toNumber());
+      setTotalSupply(total);
+      setTotalMinted(minted);
     } catch (error) {
       console.error(error);
     }
@@ -56,7 +41,7 @@ export default function Home() {
   const mint = async () => {
     if (!contract || !address) return;
     try {
-      const tx = await contract.claim(address);
+      const tx = await contract.claim();
       await tx.wait();
       setMinted(true);
       loadSupply();
@@ -66,27 +51,35 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (contract) {
-      loadSupply();
-    }
+    if (contract) loadSupply();
   }, [contract]);
 
   return (
-    <main>
+    <main className="flex flex-col items-center justify-center h-screen bg-blue-700">
       {!address ? (
         <div>
-          <button onClick={connectWallet}>connectWallet</button>
+          <ConnectButton connectWallet={connectWallet} />
         </div>
       ) : (
         <div>
-          <p>Connected as: {address}</p>
-          <p>Total Supply: {totalSupply}</p>
-          <p>Total Minted: {totalMinted}</p>
-          {!minted ? (
-            <button onClick={mint}>Mint</button>
-          ) : (
-            <p>You have already minted!</p>
-          )}
+          <NavBar address={address} />
+          <div className="text-center flex justify-center items-center gap-3">
+            <Image
+              src="/nft.jpeg"
+              alt="NFT Image"
+              width={300}
+              height={300}
+              className="rounded-lg shadow-lg border-2 border-purple-800 p-1"
+            />
+            <div className="text-left">
+              <NFTInfo
+                contractAddress={contractAddress}
+                totalSupply={totalSupply}
+                totalMinted={totalMinted}
+              />
+              <MintButton minted={minted} mint={mint} />
+            </div>
+          </div>
         </div>
       )}
     </main>
