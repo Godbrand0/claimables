@@ -22,6 +22,7 @@ export default function MintButton({ minted, mint }: Props) {
       >
         { minted ? "Minted!" : "Mint NFT"}
       </button>
+      <p className="text-gray-300 text-xs italic text-center">you can only mint one NFT per wallet</p>
     </div>
   );
 }
