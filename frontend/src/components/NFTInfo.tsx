@@ -12,7 +12,7 @@ export default function NFTInfo({
   totalMinted,
 }: Props) {
   return (
-    <div className="p-4 text-sm italic font-bold w-[50%]">
+    <div className="p-4 text-sm italic font-bold space-y-4 flex flex-col ">
       <h2 className="text-4xl font-extrabold ">A Monad Original</h2>
       <p>
         Dive into the world of Monad with an exclusive NFT, crafted just for
