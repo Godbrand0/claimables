@@ -10,7 +10,7 @@ import NFTInfo from "../components/NFTInfo";
 import Image from "next/image";
 
 import NavBar from "@/components/navBar";
-import abi from "../../../artifacts/contracts/claimables.sol/Airdrop.json";
+import abi from "../Airdrop.json";
 
 // Replace with your contract ABI (you can get this from your contract's compilation output)
 
