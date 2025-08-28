@@ -3,20 +3,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../store";
 import { setWallet, clearWallet } from "../store/walletSlice";
 import { useCallback, useEffect } from "react";
+import { EIP1193Provider } from "viem";
+
+// Extend the Window interface to include ethereum
+declare global {
+  interface Window {
+    ethereum: EIP1193Provider | undefined;
+  }
+}
 
 export function useWallet() {
   const dispatch = useDispatch<AppDispatch>();
   const wallet = useSelector((state: RootState) => state.wallet);
 
   const connectWallet = useCallback(async () => {
-    if (!(window as any).ethereum) {
+    if (!window.ethereum) {
       alert("Metamask not detected");
       return;
     }
 
     try {
-      const provider = (window as any).ethereum;
-      const accounts = await provider.request({ method: "eth_requestAccounts" });
+      const provider = window.ethereum;
+      const accounts = await provider.request({
+        method: "eth_requestAccounts",
+      });
       const chainId = await provider.request({ method: "eth_chainId" });
 
       dispatch(setWallet({ address: accounts[0], chainId }));
@@ -27,9 +37,9 @@ export function useWallet() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!(window as any).ethereum) return;
+    if (!window.ethereum) return;
 
-    const provider = (window as any).ethereum;
+    const provider = window.ethereum;
 
     const handleAccountsChanged = (newAccounts: string[]) => {
       if (newAccounts.length > 0) {
@@ -42,9 +52,11 @@ export function useWallet() {
     };
 
     const handleChainChanged = (newChainId: string) => {
-      provider.request({ method: "eth_requestAccounts" }).then((accounts: string[]) => {
-        dispatch(setWallet({ address: accounts[0], chainId: newChainId }));
-      });
+      provider
+        .request({ method: "eth_requestAccounts" })
+        .then((accounts: string[]) => {
+          dispatch(setWallet({ address: accounts[0], chainId: newChainId }));
+        });
     };
 
     provider.on("accountsChanged", handleAccountsChanged);

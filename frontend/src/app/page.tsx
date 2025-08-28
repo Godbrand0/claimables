@@ -1,6 +1,13 @@
 // app/page.tsx
 "use client";
 
+// Extend the Window interface to include ethereum
+declare global {
+  interface Window {
+    ethereum: EIP1193Provider | undefined;
+  }
+}
+
 import { useEffect, useState } from "react";
 import { useWallet } from "../hooks/useWallet"; // Import the useWallet hook
 import { ethers } from "ethers";
@@ -11,10 +18,8 @@ import Image from "next/image";
 
 import NavBar from "@/components/navBar";
 import abi from "../Airdrop.json";
+import { EIP1193Provider } from "viem";
 
-// Replace with your contract ABI (you can get this from your contract's compilation output)
-
-// Replace with your deployed contract address
 const contract_address = "0xf4E816Bb0564a517FA74C8704893bbaB8492758F";
 
 export default function Home() {
@@ -27,11 +32,12 @@ export default function Home() {
   // Initialize contract when wallet is connected
   useEffect(() => {
     const initContract = async () => {
-      if (!wallet.isConnected || !wallet.address || !(window as any).ethereum)
-        return;
+      if (!wallet.isConnected || !wallet.address || !window.ethereum) return;
 
       try {
-        const provider = new ethers.BrowserProvider((window as any).ethereum);
+        const provider = new ethers.BrowserProvider(
+          window.ethereum as EIP1193Provider
+        );
         const signer = await provider.getSigner();
         const contractInstance = new ethers.Contract(
           contract_address,
