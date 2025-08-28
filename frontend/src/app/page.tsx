@@ -84,7 +84,7 @@ export default function Home() {
   }, [contract]);
 
   return (
-    <main className="flex flex-col items-center justify-center h-screen bg-blue-700">
+    <main className="flex flex-col items-center justify-center h-screen bg-blue-700 max-w-full">
       {!wallet.isConnected ? (
         <div>
           <ConnectButton connectWallet={connectWallet} />
@@ -92,15 +92,15 @@ export default function Home() {
       ) : (
         <div>
           <NavBar address={wallet.address!} /> {/* Pass wallet address */}
-          <div className="text-center flex justify-center items-center gap-3">
+          <div className="text-center md:flex justify-center items-center gap-3 max-w-full mx-3 mt-14">
             <Image
               src="/nft.jpeg"
               alt="NFT Image"
               width={300}
               height={300}
-              className="rounded-lg shadow-lg border-2 border-purple-800 p-1"
+              className="rounded-lg shadow-lg border-2 border-purple-800 p-1 "
             />
-            <div className="text-left bg-purple-900 h-[380px] rounded-2xl w-[450px]  text-gray-300 shadow-2xl ">
+            <div className="text-left bg-purple-900 h-[390px]  rounded-2xl md:w-[450px]  text-gray-300 shadow-2xl ">
               <NFTInfo
                 contractAddress={contract_address}
                 totalSupply={totalSupply}
